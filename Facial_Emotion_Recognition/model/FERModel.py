@@ -4,7 +4,7 @@ import numpy as np
 from sklearn.metrics import precision_score, recall_score, accuracy_score, confusion_matrix
 
 class EmotionRecognitionModel():
-    def __init__(self, model, device, n_classes=7, weights=None, criterion=None, lr=None, epochs=None):
+    def __init__(self, model, device, n_classes=3, weights=None, criterion=None, lr=None, epochs=None):
         self.model = model
         self.criterion = criterion
         self.device = device

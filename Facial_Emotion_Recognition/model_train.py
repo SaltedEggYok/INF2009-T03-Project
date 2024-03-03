@@ -51,7 +51,6 @@ def main():
         file.write("parameter,epoch,measure\n")
         file.write(
             ",".join([str(best_model["param"]), str(best_model["epoch"]), str(best_model["measure"])]))
-
     # save losses
     with open(os.path.join(save_dir, "monuseg_train_losses.txt"), "w+") as file:
         file.write(",".join(map(str, best_model["model"].train_losses)))

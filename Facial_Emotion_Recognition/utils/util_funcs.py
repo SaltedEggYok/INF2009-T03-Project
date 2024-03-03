@@ -12,6 +12,14 @@ def get_emotion(label):
     }
     return label_emotion_map[label]
 
+#
+def get_generalized_emotion(emotion):
+    if(emotion in [0,1,2,4,5]):
+        return 0
+    elif(emotion in [3]):
+        return 1
+    else:
+        return 2
 
 def get_train_transform():
     transform_1 = transforms.Compose([

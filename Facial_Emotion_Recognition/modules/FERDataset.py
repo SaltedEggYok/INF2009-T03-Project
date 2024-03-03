@@ -1,4 +1,5 @@
 from torch.utils.data import Dataset
+from utils.util_funcs import get_generalized_emotion
 import os
 import pandas as pd
 import numpy as np
@@ -26,6 +27,7 @@ class EmotionRecognitionDataset(Dataset):
         row_face = list(map(int,row_pixels.split(' ')))
         # reshape to 48 by 48 as dataset is 48 x 48
         row_face = np.array(row_face).reshape(48,48).astype(np.uint8)
+        row_emotion = get_generalized_emotion(row_emotion)
         if self.transform is not None:
             row_face = cv2.equalizeHist(row_face)
             row_face = self.transform(row_face)
