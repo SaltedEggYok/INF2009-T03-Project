@@ -1,0 +1,2 @@
+parameter,epoch,measure
+0.001,9,0.5422123154081917
