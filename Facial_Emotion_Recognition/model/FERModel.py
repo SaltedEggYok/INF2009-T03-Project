@@ -18,7 +18,7 @@ class EmotionRecognitionModel():
             self.optimizer = None
     def config_model(self,weights):
         if weights is not None:
-            self.model.load_state_dict(weights)
+            self.model.load_state_dict(torch.load(weights))
         self.model.to(self.device)
     def train(self, dataloader):
         #initialize train mode
@@ -96,6 +96,15 @@ class EmotionRecognitionModel():
             self.train_losses.append(float(train_loss))
             self.valid_losses.append(float(valid_loss))
         return best_epoch,best_measure,best_weights
+    # Predict 1 image
+    def predict_one(self,image):
+        self.model.eval()
+        with torch.no_grad():
+                preds = self.model(image)
+                # preds = torch.squeeze(preds)
+                # preds = preds.reshape(image.shape[0],-1)
+                _, predicted_emotion = torch.max(preds,axis = 1)
+                return predicted_emotion.item()
             
             
             
