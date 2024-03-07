@@ -12,10 +12,14 @@ import cv2
 
 def convert_image(image_path):
     image = cv2.imread(image_path)
-    image = cv2.resize(image,(48,48))
-    image = cv2.cvtColor(image,cv2.COLOR_RGB2GRAY)
+    image = cv2.resize(image,(48,48),interpolation=cv2.INTER_AREA)
+    image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+    cv2.imwrite('test_2.jpg',image)
     image = transforms.ToTensor()(image).to(DEVICE)
+    
+    # print(image.shape)
     image = torch.unsqueeze(image,0)
+    print(image.shape)
     return image
 
 def main():
@@ -23,8 +27,8 @@ def main():
     base_model.to(DEVICE)
     best_model = EmotionRecognitionModel(model = base_model,device = DEVICE,weights="ERM_Results/ERModel.pt")
     converted_image_happy = convert_image('test_happy.jpg')
-    converted_image_sad = convert_image('test_sad.jpg')
-    converted_image_neutral = convert_image('neutral_specific.jpg')
+    converted_image_sad = convert_image('test_sad2.jpg')
+    converted_image_neutral = convert_image('test_angry.jpg')
     result1 = best_model.predict_one(converted_image_happy)
     result2 = best_model.predict_one(converted_image_sad)
     result3 = best_model.predict_one(converted_image_neutral)
@@ -32,6 +36,5 @@ def main():
     print(get_generalized_emotion_map(result2))
     print(get_generalized_emotion_map(result3))
    
-    
 if __name__ == "__main__":
     main()
