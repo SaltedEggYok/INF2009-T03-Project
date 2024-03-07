@@ -1,0 +1,5 @@
+#ignore demo dataset
+SER/data/testdata/*
+
+#ignore csv
+*.csv

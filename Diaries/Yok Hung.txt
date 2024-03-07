@@ -1,0 +1,15 @@
+23/2/2024
+Found a speech emotion recognition model at https://github.com/MiteshPuthran/Speech-Emotion-Analyzer
+Tested their inpyb file locally on my laptop and was able to get things working
+This model is a CNN, and has already been trained with multiple layers
+
+26/2/2024
+Found another model at https://github.com/MeidanGR/SpeechEmotionRecognition_Realtime/tree/main
+Their model is a LSTM instead, but it is real time, instead of reading a file directly
+Might be useful if we want to do real-time analysis, will keep it in consideration
+Notably higher accuracy compared to the other one previously found
+
+28/2/2024
+Tested 1st model's prediction on the Raspberry Pi, seems to be able to work fine
+Able to take in recorded audio and have a result appear  
+
