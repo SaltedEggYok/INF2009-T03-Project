@@ -33,7 +33,7 @@ def main():
         print(f'##########STARTING NEW RUN Learning Rate: {lr}###########')
         # Clear the GPU cache
         torch.cuda.empty_cache() if DEVICE == 'cuda' else None
-        model = EmotionRecognitionModel(model = base_model,device = DEVICE,epochs = 15, criterion = loss_crit,lr=lr)
+        model = EmotionRecognitionModel(model = base_model,device = DEVICE,epochs = 50, criterion = loss_crit,lr=lr)
         best_epoch,best_measure,best_weights = model.fit(dataloaders['train'],dataloaders['val'])
         # print(avg_loss)
         if best_model["measure"] is None or best_measure > best_model["measure"]:

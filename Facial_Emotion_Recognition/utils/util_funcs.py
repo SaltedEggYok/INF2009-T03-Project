@@ -11,7 +11,7 @@ def get_emotion(label):
         6: 'Neutral'        
     }
     return label_emotion_map[label]
-#
+
 def get_generalized_emotion(emotion):
     if(emotion in [0,1,2,4,5]):
         return 0
@@ -32,7 +32,7 @@ def get_generalized_emotion_map(emotion):
 def get_train_transform():
     transform_1 = transforms.Compose([
             transforms.ToPILImage(),
-            transforms.RandomHorizontalFlip(0.5),
+            transforms.RandomHorizontalFlip(0.2),
             transforms.ToTensor()
         ]
     )
