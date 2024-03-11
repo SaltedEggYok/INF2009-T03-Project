@@ -15,6 +15,7 @@ def write_image(image_path,image):
     # image = cv2.cvtColor(image.astype(np.float32),cv2.COLOR_GRAY2RGB)
     cv2.imwrite(image_path,image)
     
+
 def convert_image(image):
     # image = cv2.imread(image_path)
     # image = cv2.resize(np.uint8(image),(48,48),interpolation=cv2.INTER_AREA)
