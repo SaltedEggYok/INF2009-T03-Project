@@ -1,0 +1,11 @@
+22nd Feb:
+Researched on the potential methodology and modeles which can be utilised for the facial emotion recognition model. Originally started with the 7 classes. Started with the implementation of the model and implemented the Dataset class
+
+29th Feb:
+Created the generate_dataset script, creating the respective train test and val datasets for reproducibility.Implemented the model architecture and model wrapper and adapted training method from https://github.com/AmrElsersy/Emotions-Recognition. 
+
+3rd March:
+Finished implementation of base model training and evaluation. Changed the specific classes to generic positive negative and neutral classes to reduce number of possible output classes for prediction.
+
+7th March:
+Implemented inferrence on one image. Tested the model to check if emotion detector is working on real and unseen data. 
