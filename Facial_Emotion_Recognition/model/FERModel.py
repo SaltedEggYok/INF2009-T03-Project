@@ -14,6 +14,7 @@ class EmotionRecognitionModel():
         self.config_model(weights)
         if(lr != None):
             self.optimizer = torch.optim.Adam(self.model.parameters(),lr=float(lr))
+           
         else:
             self.optimizer = None
     def config_model(self,weights):
@@ -44,7 +45,6 @@ class EmotionRecognitionModel():
             num_of_batches += 1
     
         return avg_loss,epoch_losses
-    
     def evaluate(self, dataloader):
         self.model.eval()   
         with torch.no_grad():

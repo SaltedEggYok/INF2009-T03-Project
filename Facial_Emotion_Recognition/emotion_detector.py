@@ -6,12 +6,12 @@ from utils.config import FRAMEHEIGHT,FRAMEWIDTH,DEFAULT_DETECTOR,FONTTHICKNESS,F
 from torch.utils.data import DataLoader
 from model.FERModel import EmotionRecognitionModel
 from mini_XCeption.XCeptionModel import Mini_Xception
-from utils.util_funcs import get_generalized_emotion_map
+from utils.util_funcs import get_generalized_emotion_map,get_average_emotion
 from datetime import datetime
 import torchvision.transforms as transforms
 import cv2
 import time
-
+import pandas as pd
 
 def write_image(image_path,image):
     # image = cv2.cvtColor(image.astype(np.float32),cv2.COLOR_GRAY2RGB)
@@ -67,7 +67,7 @@ def main():
                 face = convert_image(face)
                 pred = best_model.predict_one(face)
                 result_text = get_generalized_emotion_map(pred)
-                
+
                 # add person:emotion dictionary to time_stamp_dict
                 face_dict[idx] = [result_text]
                 time_stamp_dict[formatted_time] = face_dict
@@ -82,10 +82,13 @@ def main():
             if(key == ord('q')):
                 break
         except KeyboardInterrupt:
-            break
-    print(time_stamp_dict)
+            break            
     cap.release()
     cv2.destroyAllWindows()
+    emotion_dict = get_average_emotion(time_stamp_dict)
+    with open('ERM_Results/emotion_dict.txt', 'w') as file:
+        for key, value in emotion_dict.items():
+            file.write(f"{key}: {value}\n")
     # converted_image_happy = convert_image('test_happy.jpg')
     # converted_image_sad = convert_image('test_sad2.jpg')
     # converted_image_neutral = convert_image('test_angry.jpg')

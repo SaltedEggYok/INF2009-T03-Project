@@ -12,6 +12,26 @@ def get_emotion(label):
     }
     return label_emotion_map[label]
 
+def get_average_emotion(time_stampdict : dict):
+    average_emotions = {}
+    for time_stamp,emotion_dict in time_stampdict.items():
+        hour, minute, second, _ = map(int, time_stamp.split(':'))
+        average_emotions[(hour,minute,second)] = {}
+        for person,emotions in emotion_dict.items():
+            total_emotions = len(emotions)
+            neutral_count = emotions.count('Neutral')
+            positive_count = emotions.count('Positive')
+            negative_count = emotions.count('Negative')
+            
+            if neutral_count >= positive_count and neutral_count >= negative_count:
+                average_emotion = 'Neutral'
+            elif positive_count >= neutral_count and positive_count >= negative_count:
+                average_emotion = 'Positive'
+            else:
+                average_emotion = 'Negative'
+            average_emotions[(hour,minute,second)][person] = average_emotion
+    return average_emotions            
+
 def get_generalized_emotion(emotion):
     if(emotion in [0,1,2,4,5]):
         return 0

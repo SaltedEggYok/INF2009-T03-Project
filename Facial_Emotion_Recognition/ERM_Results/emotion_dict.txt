@@ -1,0 +1,18 @@
+(18, 31, 25): {0: 'Neutral'}
+(18, 31, 27): {0: 'Neutral'}
+(18, 31, 28): {0: 'Neutral', 1: 'Negative'}
+(18, 31, 29): {0: 'Neutral'}
+(18, 31, 30): {0: 'Neutral'}
+(18, 31, 31): {0: 'Positive'}
+(18, 31, 32): {0: 'Positive', 1: 'Negative'}
+(18, 31, 33): {0: 'Neutral'}
+(18, 31, 34): {0: 'Neutral'}
+(18, 31, 35): {0: 'Neutral'}
+(18, 31, 36): {0: 'Neutral', 1: 'Negative'}
+(18, 31, 37): {0: 'Neutral', 1: 'Negative'}
+(18, 31, 38): {0: 'Neutral', 1: 'Negative'}
+(18, 31, 39): {0: 'Negative'}
+(18, 31, 40): {0: 'Negative', 1: 'Neutral'}
+(18, 31, 41): {0: 'Neutral'}
+(18, 31, 42): {0: 'Neutral'}
+(18, 31, 43): {0: 'Neutral'}
