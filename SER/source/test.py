@@ -13,7 +13,7 @@ from keras.layers import (
     Dense, Embedding, LSTM, Input, Flatten, Dropout, Activation,
     Conv1D, MaxPooling1D, AveragePooling1D
 )
-from keras.preprocessing import sequence, text
+from keras.preprocessing import sequence
 from keras.utils import pad_sequences, to_categorical
 from keras.callbacks import ModelCheckpoint
 from keras import regularizers
@@ -137,7 +137,7 @@ loaded_model.compile(
 # testing 1 file directly
 
 #livedf= pd.DataFrame(columns=['feature'])
-X, sample_rate = librosa.load(dir + 'data/testdata/Actor_24/03-01-01-01-01-01-24.wav', res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0.5)
+X, sample_rate = librosa.load(dir + 'output10.wav', res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0.5)
 sample_rate = np.array(sample_rate)
 mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13),axis=0)
 featurelive = mfccs

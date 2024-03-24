@@ -10,7 +10,7 @@ Installing requirements
 pip install -r ./SER/requirements.txt
 
 Running test code
-python ./SER/test.py
+python ./SER/source/test.py
 
 
 # Speech Emotion Recognition Real Time
