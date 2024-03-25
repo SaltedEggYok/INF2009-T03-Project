@@ -51,6 +51,11 @@ mqttc.on_subscribe = on_subscribe
 mqttc.on_unsubscribe = on_unsubscribe
 
 mqttc.user_data_set([])
+
+# Using your pi as broker, connect to your pi's ip address; change the ip address below accordingly
 mqttc.connect("192.168.26.142")
+# Alternatively, I think can use the cloud as broker to test the code; uncomment the line below
+# mqttc.connect("mqtt.eclipseprojects.io")
+
 mqttc.loop_forever()
 print(f"Received the following message: {mqttc.user_data_get()}")

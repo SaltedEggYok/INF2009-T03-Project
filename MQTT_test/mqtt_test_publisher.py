@@ -5,12 +5,13 @@ import base64
 def on_publish(client, userdata, mid, reason_code, properties):
 	print(f"Message {mid} published.")
 
-#unacked_publish = set()
 mqttc = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 mqttc.on_publish = on_publish
 
-#mqttc.user_data_set(unacked_publish)
+# Using your pi as broker, connect to your pi's ip address; change the ip address below accordingly
 mqttc.connect("192.168.26.142")
+# Alternatively, I think can use the cloud as broker to test the code; uncomment the line below
+# mqttc.connect("mqtt.eclipseprojects.io")
 mqttc.loop_start()
 
 # Path to your emotion_dict.txt file
