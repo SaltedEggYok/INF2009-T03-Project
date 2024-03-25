@@ -13,3 +13,7 @@ Notably higher accuracy compared to the other one previously found
 Tested 1st model's prediction on the Raspberry Pi, seems to be able to work fine
 Able to take in recorded audio and have a result appear  
 
+13/3/2024
+Tested 2nd model's runtime and prediction, works fine. However as we have changed the structure of program,
+the 1st model seems to be more suitable for our needs. Thus will continue working on taking and adapting the 1st
+model into our application.
