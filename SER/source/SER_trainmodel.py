@@ -5,30 +5,21 @@ from sklearn.preprocessing import LabelEncoder
 import os
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
+import SER.source.SER_utils as SERutils
 
 
 class SER_trainmodel:
     df_features = None
-    feelings_list = ["female_angry",
-                     "female_calm",
-                     "female_fearful",
-                     "female_happy",
-                     "female_sad",
-                     "male_angry",
-                     "male_calm",
-                     "male_fearful",
-                     "male_happy",
-                     "male_sad"]
+    feelings_list = SERutils.FEELING_LIST
+    df = None
+    loaded_model = None
 
     def __init__(self):
-        self.model = None
         self.df = None
         self.loaded_model = None
         self.lb = LabelEncoder()
-        self.lb.fit(
-            [
-                ""]
-        )
+        self.lb.fit(self.feelings_list)
+
         # initialize dataframe
         self.df_features = pd.DataFrame(columns=["feature"])
 
@@ -50,7 +41,6 @@ class SER_trainmodel:
     """
 
     def add_audio_features(self, audio_path):
-
         # access folder
         audio_files = os.listdir(audio_path)
 
@@ -59,14 +49,13 @@ class SER_trainmodel:
 
         for index, y in enumerate(audio_files):
             # filter out unwanted files (only taking specfic feelings)
-            if (
-                audio_files[index][6:-16] != "01"
+            if (audio_files[index][6:-16] != "01"
                 and audio_files[index][6:-16] != "07"
                 and audio_files[index][6:-16] != "08"
-                and audio_files[index][:2] != "su"
-                and audio_files[index][:1] != "n"
-                and audio_files[index][:1] != "d"
-            ):
+                and audio_files[index][:2] != "su"  # remove?
+                and audio_files[index][:1] != "n"  # remove?
+                and audio_files[index][:1] != "d"  # remove?
+                ):
                 # load audio file
                 X, sample_rate = librosa.load(
                     audio_path + y,
@@ -78,9 +67,8 @@ class SER_trainmodel:
                 # get sample rate
                 sample_rate = np.array(sample_rate)
                 # get mfccs - Mel-frequency cepstral coefficients
-                mfccs = np.mean(librosa.feature.mfcc(
+                feature = np.mean(librosa.feature.mfcc(
                     y=X, sr=sample_rate, n_mfcc=13), axis=0)
-                feature = mfccs
                 self.df_features.loc[counter] = [feature]
                 counter = counter + 1
 
@@ -93,6 +81,8 @@ class SER_trainmodel:
         # load weights into new model
         self.loaded_model.load_weights(
             "SER/saved_models/Emotion_Voice_Detection_Model.h5")
+
+        # DEBUG
         print("Loaded model from disk")
 
         # compile the model
