@@ -9,3 +9,13 @@ Finished implementation of base model training and evaluation. Changed the speci
 
 7th March:
 Implemented inferrence on one image. Tested the model to check if emotion detector is working on real and unseen data. 
+
+15th March:
+Started work on post processing of outputs of the model classifier, retrieved outputs as a dictionary and thinking of format of data to be outputted using MQTT
+
+22nd March:
+Completed post processing of outputs, decided to send data in the form of 
+(18, 31, 25): {0: 'Neutral'}
+(18, 31, 27): {0: 'Neutral'}
+(18, 31, 28): {0: 'Neutral', 1: 'Negative'}
+where {time_stamp : {user:emotion}}
