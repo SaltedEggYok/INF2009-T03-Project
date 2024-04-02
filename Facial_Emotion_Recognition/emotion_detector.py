@@ -33,11 +33,16 @@ def convert_image(image):
 def convert_grayscale(image):
      return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 
+"""
+
+"""
 def main():
     base_model = Mini_Xception() 
     base_model.to(DEVICE)
     best_model = EmotionRecognitionModel(model = base_model,device = DEVICE,weights="ERM_Results/ERModel.pt")
     cap = cv2.VideoCapture(0)
+    fourcc = cv2.VideoWriter_fourcc(*'XVID')
+    out = cv2.VideoWriter('results/video.avi',fourcc,20.0,(640,480))
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAMEWIDTH)
     cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAMEHEIGHT)     
     time_stamp_dict = {}
@@ -79,6 +84,7 @@ def main():
                             FONTSIZE, TEXTCOLOR, FONTTHICKNESS, LINE)
             cv2.imshow('Feed',frame)    
             key = cv2.waitKey(1)
+            out.write(frame)
             if(key == ord('q')):
                 break
         except KeyboardInterrupt:
