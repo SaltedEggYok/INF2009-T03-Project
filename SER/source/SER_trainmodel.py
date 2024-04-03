@@ -5,12 +5,12 @@ from sklearn.preprocessing import LabelEncoder
 import os
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
-import SER.source.SER_utils as SERutils
+import SER_utils
 
 
 class SER_trainmodel:
     df_features = None
-    feelings_list = SERutils.FEELING_LIST
+    feelings_list = SER_utils.FEELING_LIST
     df = None
     loaded_model = None
 

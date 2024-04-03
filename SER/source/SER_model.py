@@ -21,7 +21,7 @@ import librosa
 import librosa.display
 import tensorflow as tf
 from matplotlib.pyplot import specgram
-import SER.source.SER_utils as SERutils
+import SER_utils
 
 """
 Class to predict the emotion from the audio file
@@ -57,7 +57,7 @@ class SER_model:
     def __init__(self):
         self.loaded_model = None
         self.lb = LabelEncoder()
-        self.lb.fit(SERutils.FEELING_LIST)
+        self.lb.fit(SER_utils.FEELING_LIST)
         self.results = None
 
     """
@@ -132,7 +132,7 @@ class SER_model:
 
     """
 
-    def model_predict(self, audio_path):
+    def model_predict(self, audio_path, timestamp):
         # preprocess the audio, get features
         feature = self.preprocess_audio(audio_path)
 
@@ -149,6 +149,8 @@ class SER_model:
 
         # converting the prediction (interger form) to emotion (string form), might not be needed in final product
         livepredictions = self.lb.inverse_transform(liveabc)
+
+        self.add_to_results(timestamp, livepredictions)
         return livepredictions
 
     """
@@ -169,7 +171,7 @@ class SER_model:
     None
     """
 
-    def add_to_results(self, timestamp, userID, emotion):
+    def add_to_results(self, timestamp, emotion, userID=0):
         # declare a dictionary to store the results if it doesn't exist
         if self.results is None:
             self.results = {}
@@ -181,3 +183,8 @@ class SER_model:
 
     def get_results(self):
         return self.results
+
+    def export_result(self, filename):
+        # export the results to a txt file
+        with open(filename, "w") as file:
+            file.write(str(self.results))

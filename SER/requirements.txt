@@ -7,3 +7,5 @@ matplotlib==3.6.2
 scikit-learn==1.2.0
 tensorflow==2.10.0
 librosa==0.10.1
+pyaudio==0.2.14
+opencv-python==1.234.2
