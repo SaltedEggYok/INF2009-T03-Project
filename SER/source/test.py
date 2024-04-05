@@ -67,7 +67,7 @@ dir = "SER/"
 
 # loading json and creating model
 
-json_file = open(dir + "model.json", "r")
+json_file = open(dir + "saved_models/model.json", "r")
 loaded_model_json = json_file.read()
 json_file.close()
 loaded_model = model_from_json(loaded_model_json)
@@ -138,7 +138,7 @@ loaded_model.compile(
 
 # livedf= pd.DataFrame(columns=['feature'])
 X, sample_rate = librosa.load(
-    dir + 'output10.wav', res_type='kaiser_fast', duration=2.5, sr=22050*2, offset=0.5)
+    dir + 'our_data/03-01-02-01-01-01-25.wav', res_type='kaiser_fast', duration=2.5, sr=22050*2, offset=0.5)
 sample_rate = np.array(sample_rate)
 mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13), axis=0)
 featurelive = mfccs
