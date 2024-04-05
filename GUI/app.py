@@ -6,123 +6,107 @@ import sys
 import ast
 
 sys.path.append("..")
-#from Facial_Emotion_Recognition.emotion_detector import detect_emotion
-#from SER.Emotion_Voice_Detection_Model import SER
 
-# function to read the txt file 
-def read_emotion_data_from_file(file_path):
-    emotion_data = {}
+# Function to read data from file
+def read_data_from_file(file_path):
+    data = {}
     with open(file_path, 'r') as file:
         for line in file:
-            line = line.strip()  
-            if not line:  
+            line = line.strip()
+            if not line:
                 continue
-            timestamp_str, emotions_str = line.split(':', 1)
+            timestamp_str, values_str = line.split(':', 1)
             timestamp = tuple(map(int, timestamp_str.strip('()').split(', ')))
-            emotions = ast.literal_eval(emotions_str.strip())
-            emotion_data[timestamp] = emotions
-    return emotion_data
-
-# placeholder (see how it looks like)
-def generate_sample_data():
-    np.random.seed(0)
-    data = pd.DataFrame({
-        'date': pd.date_range(start='1/1/2021', periods=100),
-        'category': np.random.choice(['A', 'B', 'C', 'D'], 100),
-        'value': np.random.rand(100)
-    })
+            values = ast.literal_eval(values_str.strip())
+            data[timestamp] = values
     return data
 
-# Converting of dict to df (HW here)
-def process_emotion_data(raw_emotion_data):
+# Function to process the data
+def process_data(raw_data):
     records = []
-    for timestamp, emotions in raw_emotion_data.items():
-        ts = pd.Timestamp(year=2021, month=1, day=1, hour=timestamp[0], minute=timestamp[1], second=timestamp[2])
-        for person_id, emotion in emotions.items():
+    for timestamp, values in raw_data.items():
+        ts = pd.Timestamp(year=2024, month=4, day=8, hour=timestamp[0], minute=timestamp[1], second=timestamp[2])
+        for person_id, value in values.items():
             records.append({
                 "Timestamp": ts,
                 "Person": person_id,
-                "Emotion": emotion
+                "Value": value
             })
-    
     return pd.DataFrame.from_records(records)
 
-# Using example data
-file_path = '../Facial_Emotion_Recognition/ERM_Results/emotion_dict.txt' 
-raw_emotion_data = read_emotion_data_from_file(file_path)
+emotion_raw_data = read_data_from_file('../Facial_Emotion_Recognition/ERM_Results/emotion_dict.txt')
+speech_raw_data = read_data_from_file('../Facial_Emotion_Recognition/ERM_Results/speech_dict.txt')
 
-def get_emotion_data():
-    # Change this to put our data
-    timestamps = pd.date_range('2021-01-01', periods=10, freq='15S')
-    averaged_emotions = np.random.uniform(low=0, high=1, size=10)
-    return dict(zip(timestamps.strftime('%H:%M:%S'), averaged_emotions))
+emotion_df = process_data(emotion_raw_data)
+speech_df = process_data(speech_raw_data)
 
-emotion_df = process_emotion_data(raw_emotion_data)
+# Convert emotion and speech to numeric values for plotting
+value_to_num = {'Negative': -1, 'Neutral': 0, 'Positive': 1}
+emotion_df['Value_Num'] = emotion_df['Value'].map(value_to_num)
+speech_df['Value_Num'] = speech_df['Value'].map(value_to_num)
 
-emotion_to_num = {'Negative': -1, 'Neutral': 0, 'Positive': 1}
-emotion_df['Emotion'] = emotion_df['Emotion'].map(emotion_to_num)
+average_emotion = emotion_df['Value_Num'].mean()
+average_speech = speech_df['Value_Num'].mean()
 
-# fake data for the facial and speech graph
-data = generate_sample_data()
-emotion_data = get_emotion_data()
+metric1_text = 'Happy' if average_emotion > 0 else 'Sad'
+metric2_text = 'Happy' if average_speech > 0 else 'Sad'
 
-# dict to a df
-df_emotion = pd.DataFrame(list(emotion_data.items()), columns=['Timestamp', 'Averaged Emotion'])
-
-
-# GUI STARTS HERE
-metric1, metric2 = 'Happy', 'Excited'
-
+# GUI starts here
 st.title('Edvisor Dashboard')
 st.header('Overview')
 
-# metrics at the top
 col1, col2 = st.columns(2)
-col1.metric("Emotion", metric1)
-col2.metric("Speech", metric2)
+col1.metric("Average Emotion", metric1_text)
+col2.metric("Average Speech", metric2_text)
 
-# Charts
-st.subheader('Charts')
-fig_col1, fig_col2 = st.columns(2)
+with col1:
+    # Plotting Emotion Over Time
+    st.subheader('Emotion Over Time')
+    fig1, ax1 = plt.subplots()
+    for person_id, group_df in emotion_df.groupby('Person'):
+        group_df = group_df.sort_values('Timestamp')
+        ax1.plot(group_df['Timestamp'], group_df['Value_Num'], marker='o', label=f'Person {person_id}')
+    ax1.set_ylabel('Emotion Level')
+    ax1.set_title('Emotion Over Time')
+    ax1.legend()
+    st.pyplot(fig1)
 
-# First chart maybe show the emotion? 
-with fig_col1:
-    fig, ax = plt.subplots()
-    pivot_table = data.pivot_table(index='category', columns='date', values='value', aggfunc=np.mean)
-    cax = ax.matshow(pivot_table, cmap='viridis')
-    plt.title('Emotion Chart')
-    st.pyplot(fig)
+with col2:
+    # Plotting Speech Over Time
+    st.subheader('Speech Over Time')
+    fig2, ax2 = plt.subplots()
+    for person_id, group_df in speech_df.groupby('Person'):
+        group_df = group_df.sort_values('Timestamp')
+        ax2.plot(group_df['Timestamp'], group_df['Value_Num'], marker='o', label=f'Person {person_id}')
+    ax2.set_ylabel('Speech Level')
+    ax2.set_title('Speech Over Time')
+    ax2.legend()
+    st.pyplot(fig2)
 
-# Second chart show speech?
-with fig_col2:
-    fig, ax = plt.subplots()
-    ax.hist(data['value'], bins=15)
-    plt.title('Speech Chart')
-    st.pyplot(fig)
+# Overall Analysis
+st.subheader('Overall Analysis')
+analysis_fig, analysis_ax = plt.subplots()
 
-st.subheader('Emotion Over Time')
-fig, ax = plt.subplots(figsize=(10, 4))
+# Average emotion and speech level for each person
+for person_id in emotion_df['Person'].unique():
+    emotion = emotion_df[emotion_df['Person'] == person_id]['Value_Num'].mean()
+    speech = speech_df[speech_df['Person'] == person_id]['Value_Num'].mean()
+    analysis_ax.scatter(speech, emotion, label=f'Person {person_id}')
 
-# Plotting a line for each person 
-for person_id, group_df in emotion_df.groupby('Person'):
-    # Sort by timestamp to plot it properlyy
-    group_df = group_df.sort_values('Timestamp')  
-    ax.plot(group_df['Timestamp'], group_df['Emotion'], marker='o', label=f'Person {person_id}')
+analysis_ax.axhline(0, color='grey', linestyle='--')
+analysis_ax.axvline(0, color='grey', linestyle='--')
+analysis_ax.set_xlabel('Average Speech Level')
+analysis_ax.set_ylabel('Average Emotion Level')
+analysis_ax.set_title('Overall Analysis')
+analysis_ax.grid(True)
+analysis_ax.legend()
+st.pyplot(analysis_fig)
 
-all_timestamps = pd.to_datetime(emotion_df['Timestamp'].sort_values().unique())
-ax.set_xticks(all_timestamps)
-ax.set_xticklabels([ts.strftime('%H:%M:%S') for ts in all_timestamps], rotation=45, ha='right')
+emotion_df.rename(columns={'Value': 'Emotion_Value'}, inplace=True)
+speech_df.rename(columns={'Value': 'Speech_Value'}, inplace=True)
 
-plt.ylabel('Emotion Level')
-plt.xlabel('Time')
-plt.legend(title='Person ID')
-plt.title('Emotion Over Time')
-plt.tight_layout()
-st.pyplot(fig)
-
-st.subheader('Processed Emotion Data')
-st.dataframe(emotion_df)
-
-
-
+combined_df = pd.concat([emotion_df, speech_df], axis=1)
+combined_df = combined_df.loc[:, ~combined_df.columns.duplicated()]
+st.subheader('Overall Data')
+st.dataframe(combined_df)
 
