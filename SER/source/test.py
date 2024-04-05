@@ -60,10 +60,10 @@ dir = "SER/"
 # print("loaded audio features")
 
 # df3 = pd.DataFrame(df["feature"].values.tolist())
-#newdf = pd.concat([df3, labels], axis=1)
+# newdf = pd.concat([df3, labels], axis=1)
 
-#rnewdf = newdf.rename(index=str, columns={"0": "label"})
-#rnewdf = rnewdf.fillna(0)
+# rnewdf = newdf.rename(index=str, columns={"0": "label"})
+# rnewdf = rnewdf.fillna(0)
 
 # loading json and creating model
 
@@ -109,17 +109,17 @@ loaded_model.compile(
 # testlabel = test.iloc[:, -1:]
 
 
-#X_train = np.array(trainfeatures)
-#y_train = np.array(trainlabel)
-#X_test = np.array(testfeatures)
-#y_test = np.array(testlabel)
+# X_train = np.array(trainfeatures)
+# y_train = np.array(trainlabel)
+# X_test = np.array(testfeatures)
+# y_test = np.array(testlabel)
 
 
-#y_train = to_categorical(lb.fit_transform(y_train))
-#y_test = to_categorical(lb.fit_transform(y_test))
+# y_train = to_categorical(lb.fit_transform(y_train))
+# y_test = to_categorical(lb.fit_transform(y_test))
 
-#x_traincnn = np.expand_dims(X_train, axis=2)
-#x_testcnn = np.expand_dims(X_test, axis=2)
+# x_traincnn = np.expand_dims(X_train, axis=2)
+# x_testcnn = np.expand_dims(X_test, axis=2)
 
 
 # preds = loaded_model.predict(x_testcnn, batch_size=32, verbose=1)
@@ -136,26 +136,27 @@ loaded_model.compile(
 
 # testing 1 file directly
 
-#livedf= pd.DataFrame(columns=['feature'])
-X, sample_rate = librosa.load(dir + 'output10.wav', res_type='kaiser_fast',duration=2.5,sr=22050*2,offset=0.5)
+# livedf= pd.DataFrame(columns=['feature'])
+X, sample_rate = librosa.load(
+    dir + 'output10.wav', res_type='kaiser_fast', duration=2.5, sr=22050*2, offset=0.5)
 sample_rate = np.array(sample_rate)
-mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13),axis=0)
+mfccs = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13), axis=0)
 featurelive = mfccs
 livedf2 = featurelive
 
-livedf2= pd.DataFrame(data=livedf2)
+livedf2 = pd.DataFrame(data=livedf2)
 
 livedf2 = livedf2.stack().to_frame().T
 
-twodim= np.expand_dims(livedf2, axis=2)
+twodim = np.expand_dims(livedf2, axis=2)
 
 livepreds = loaded_model.predict(twodim,
-                         batch_size=32,
-                         verbose=1)
+                                 batch_size=32,
+                                 verbose=1)
 
 print(livepreds)
 
-livepreds1=livepreds.argmax(axis=1)
+livepreds1 = livepreds.argmax(axis=1)
 
 liveabc = livepreds1.astype(int).flatten()
 

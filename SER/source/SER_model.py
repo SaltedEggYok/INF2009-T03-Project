@@ -20,26 +20,78 @@ from keras import regularizers
 import librosa
 import librosa.display
 import tensorflow as tf
-
 from matplotlib.pyplot import specgram
+import SER_utils
+
+"""
+Class to predict the emotion from the audio file
+
+Attributes:
+loaded_model (keras.model): model to predict the emotion
+lb (LabelEncoder): label encoder for the emotions
+
+Methods:
+__init__(self): constructor
+load_model(self, model_path, weights_path): load the model
+preprocess_audio(self, audio_path): preprocess the audio file (internal use only)
+model_predict(self, audio_path): predict the emotion
+
+"""
 
 
 class SER_model:
+
+    # declare variables
+    loaded_model = None  # holds the model
+    lb = LabelEncoder()  # label encoder for emotions
+    """
+    Schema for the results variable:
+    results = {
+        timestamp: {
+            userID : emotion
+        }
+    }
+    """
+    results = None  # holds the results of predictions
+
     def __init__(self):
         self.loaded_model = None
         self.lb = LabelEncoder()
-        self.lb.fit(
-            ["female_angry",
-             "female_calm",
-             "female_fearful",
-             "female_happy",
-             "female_sad",
-             "male_angry",
-             "male_calm",
-             "male_fearful",
-             "male_happy",
-             "male_sad"]
-        )
+        self.lb.fit(SER_utils.FEELING_LIST)
+        self.results = None
+
+    """
+    load_model:
+    Function to load the model and weights
+
+    Parameters:
+    model_path (str): path to the model file
+    weights_path (str): path to the weights file
+
+    Returns:
+    None
+
+    Usage:
+    ser_model = SER_model()
+    ser_model.load_model(model_path, weights_path)
+    """
+
+    def load_model(self, model_path, weights_path):
+        # load json and create model
+        json_file = open(model_path, "r")
+        loaded_model_json = json_file.read()
+        json_file.close()
+        self.loaded_model = model_from_json(loaded_model_json)
+
+        # load weights into model
+        self.loaded_model.load_weights(weights_path)
+
+        # compile the model
+        opt = keras.optimizers.RMSprop(learning_rate=0.00001)
+
+        # evaluate loaded model on test data
+        self.loaded_model.compile(
+            loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
 
     """
     Function to preprocess the audio file, <!only used internally!>
@@ -55,6 +107,7 @@ class SER_model:
     """
 
     def preprocess_audio(self, audio_path):
+        # get librosa features
         X, sample_rate = librosa.load(
             audio_path,
             res_type="kaiser_fast",
@@ -62,44 +115,76 @@ class SER_model:
             sr=22050 * 2,
             offset=0.5,
         )
+        # augmenting data
         sample_rate = np.array(sample_rate)
-        mfccs = np.mean(
-            librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13), axis=0
-        )
-        feature = mfccs
+        feature = np.mean(librosa.feature.mfcc(
+            y=X, sr=sample_rate, n_mfcc=13), axis=0)
         return feature
 
-    def model_predict(self, audio_path):
+    """
+    Function to predict the emotion from the audio file
+
+    Parameters:
+    audio_path (str): path to the audio file
+
+    Returns:
+    livepredictions (str): predicted emotion
+
+    """
+
+    def model_predict(self, audio_path, timestamp):
+        # preprocess the audio, get features
         feature = self.preprocess_audio(audio_path)
+
+        # augmenting data, converting to df
         feature_df = pd.DataFrame(data=feature)
         feature_df = feature_df.stack().to_frame().T
         feature_2d = np.expand_dims(feature_df, axis=2)
+
+        # predict the emotion, calling the model
         livepreds = self.loaded_model.predict(
-            feature_2d, batch_size=32, verbose=1
-        )
+            feature_2d, batch_size=32, verbose=1)
         livepreds1 = livepreds.argmax(axis=1)
         liveabc = livepreds1.astype(int).flatten()
+
+        # converting the prediction (interger form) to emotion (string form), might not be needed in final product
         livepredictions = self.lb.inverse_transform(liveabc)
+
+        self.add_to_results(timestamp, livepredictions)
         return livepredictions
 
-    def load_model(self, model_path, weights_path):
-        json_file = open(model_path, "r")
-        loaded_model_json = json_file.read()
-        json_file.close()
-        self.loaded_model = model_from_json(loaded_model_json)
-        self.loaded_model.load_weights(weights_path)
-        opt = keras.optimizers.RMSprop(learning_rate=0.00001)
-        self.loaded_model.compile(
-            loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"]
-        )
+    """
+    Function to add the results to the results variable (for internal use)
+    Schema for the results variable:
+    results = {
+        timestamp: {
+            userID : emotion
+        }
+    }
 
-# Path: SER/source/SER_model.py
-# Compare this snippet from Facial_Emotion_Recognition/generate_imagetocsv.py:
-#     "disgust": 1,
-#     "fear": 2,
-#     "happy": 3,
-#     "sad": 4,
-#     "surprise": 5,
-#     "neutral": 6
-# }
-#
+    Parameters:
+    timestamp (int): timestamp of the prediction
+    userID (int): userID of the user
+    emotion (str OR int???): emotion predicted
+
+    Returns:
+    None
+    """
+
+    def add_to_results(self, timestamp, emotion, userID=0):
+        # declare a dictionary to store the results if it doesn't exist
+        if self.results is None:
+            self.results = {}
+        if timestamp not in self.results:
+            self.results[timestamp] = {}
+
+        # add the results to the dictionary
+        self.results[timestamp][userID] = emotion
+
+    def get_results(self):
+        return self.results
+
+    def export_result(self, filename):
+        # export the results to a txt file
+        with open(filename, "w") as file:
+            file.write(str(self.results))

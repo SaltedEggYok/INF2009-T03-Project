@@ -23,31 +23,28 @@ def convert_image(image):
     image = cv2.resize(np.uint8(image),(48,48),interpolation=cv2.INTER_AREA)
     image = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
     write_image('face.jpg',image=image)
+    print(image.shape)
     image = transforms.ToTensor()(image).to(DEVICE)
     # print(image.shape)
     image = torch.unsqueeze(image,0)
+    print(image.shape)
     return image
 
 def convert_grayscale(image):
      return cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
 
-"""
-
-"""
 def main():
     base_model = Mini_Xception() 
     base_model.to(DEVICE)
     best_model = EmotionRecognitionModel(model = base_model,device = DEVICE,weights="ERM_Results/ERModel.pt")
     cap = cv2.VideoCapture(0)
-    frame_list = []
-    frame_count = 0
     cap.set(cv2.CAP_PROP_FRAME_WIDTH, FRAMEWIDTH)
-    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAMEHEIGHT)
+    cap.set(cv2.CAP_PROP_FRAME_HEIGHT, FRAMEHEIGHT)     
     time_stamp_dict = {}
     while True:
         try:
+            time.sleep(0.2)
             ret, frame = cap.read()
-            frame_count += 1
             # frame = cv2.flip(frame, 1) # To flip the image to match with camera flip
             grayscale_image = convert_grayscale(frame)
             faces = DEFAULT_DETECTOR.detectMultiScale(grayscale_image)
@@ -80,22 +77,14 @@ def main():
                 cv2.rectangle(frame,(x,y),(x+w, y+d),(255, 255, 255), 2)
                 cv2.putText(frame, result_text, text_location, FONTTYPE,
                             FONTSIZE, TEXTCOLOR, FONTTHICKNESS, LINE)
-            cv2.imshow('Feed',frame)
-            frame_list.append(frame)
-            fps = cap.get(cv2.CAP_PROP_FPS)
+            cv2.imshow('Feed',frame)    
             key = cv2.waitKey(1)
-            #out.write(frame)
             if(key == ord('q')):
                 break
         except KeyboardInterrupt:
             break            
     cap.release()
     cv2.destroyAllWindows()
-    fourcc = cv2.VideoWriter_fourcc(*'XVID')
-            
-    out = cv2.VideoWriter('video/video.avi',fourcc,1000/300.0,(640,480))
-    for i in range(len(frame_list)):
-        out.write(frame_list[i])
     emotion_dict = get_average_emotion(time_stamp_dict)
     with open('ERM_Results/emotion_dict.txt', 'w') as file:
         for key, value in emotion_dict.items():
