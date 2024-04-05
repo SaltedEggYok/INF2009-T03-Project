@@ -1,0 +1,6 @@
+6/4/2024
+Modularize the mqtt_publisher code, creating a MQTTPublisher class that encapsulates the MQTT client setup, connection, and publishing logic.
+Including methods for publishing a message, and cleanly disconnecting from the broker.
+
+Modularize the mqtt_subsriber code, creating a MQTTSubscriber class that encapsulates the MQTT client setup and callback functions within the class.
+Including methods to connect to broker, subscribe to topics, unsubscribe from topics, and process incoming messages.
