@@ -93,7 +93,7 @@ def main():
     cv2.destroyAllWindows()
     fourcc = cv2.VideoWriter_fourcc(*'XVID')
             
-    out = cv2.VideoWriter('video/video.avi',fourcc,1000/300.0,(640,480))
+    out = cv2.VideoWriter('video/video.avi',fourcc,1000/60.0,(640,480))
     for i in range(len(frame_list)):
         out.write(frame_list[i])
     emotion_dict = get_average_emotion(time_stamp_dict)

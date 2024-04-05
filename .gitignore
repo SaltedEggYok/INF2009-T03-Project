@@ -1,5 +1,8 @@
 #ignore demo dataset
 SER/data/testdata/*
 
+#ignore datasets
+Facial_Emotion_Recognition/datasets
+
 #ignore csv
 *.csv

@@ -1,6 +1,7 @@
 import os
 import cv2
 import pandas as pd
+import numpy as np
 
 emotion_mapping = {
     "angry": 0,
@@ -16,8 +17,12 @@ emotion_mapping = {
 def preprocess_image(image_path):
     # Read the image
     image = cv2.imread(image_path)
+    
+    # Resize to 48 by 48
+    image = cv2.resize(np.uint8(image),(48,48),interpolation=cv2.INTER_AREA)
     # Convert the image to grayscale
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+   
     return gray_image
 
 # Function to convert image data to CSV format
@@ -31,14 +36,14 @@ def convert_to_csv(image_number, emotion_label, image_data, usage):
     return csv_row
 
 # Path to the directory containing image data
-input_path = 'Facial_Emotion_Recognition/datasets/our_data/'
+input_path = 'datasets/our_data/'
 
 # Initialize an empty list to store CSV rows
 csv_data = []
 
 # Determine the last image number in training.csv if it exists
-if os.path.exists('Facial_Emotion_Recognition/datasets/training.csv'):
-    training_df = pd.read_csv('Facial_Emotion_Recognition/datasets/training.csv')
+if os.path.exists('datasets/training.csv'):
+    training_df = pd.read_csv('datasets/training.csv')
     image_number = training_df.iloc[-1,0] + 1
 
 # Loop through each emotion label folder e.g. angry, disgust, fear,... 
@@ -53,17 +58,17 @@ for emotion_label_name in os.listdir(input_path):
             # Retrieve image file path
             image_path = os.path.join(emotion_folder_path, image_file)
             # Determine usage based on the image file name
-            if "Training" in image_file:
-                usage = "Training"
+            # if "Training" in image_file:
+            usage = "Training"
                 
-            # If needed for Test folder
+            # # If needed for Test folder
                 
-            # elif "PrivateTest" in image_file:
-            #     usage = "PrivateTest"
-            # elif "PublicTest" in image_file:
-            #     usage = "PublicTest"
-            else:
-                raise ValueError("Unknown usage type in file name")
+            # # elif "PrivateTest" in image_file:
+            # #     usage = "PrivateTest"
+            # # elif "PublicTest" in image_file:
+            # #     usage = "PublicTest"
+            # else:
+            #     raise ValueError("Unknown usage type in file name")
             
             # Preprocess the image
             pixels = preprocess_image(image_path)
@@ -74,7 +79,7 @@ for emotion_label_name in os.listdir(input_path):
             image_number += 1
 
 # Append CSV data to training.csv
-with open('Facial_Emotion_Recognition/datasets/training.csv', 'a') as file:
+with open('datasets/training.csv', 'a') as file:
     for row in csv_data:
         file.write('\n' + row)
 

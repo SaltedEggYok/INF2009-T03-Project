@@ -1,2 +1,0 @@
-parameter,epoch,measure
-0.001,0,0.7804402340484815
