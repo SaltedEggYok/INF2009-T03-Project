@@ -1,0 +1,20 @@
+
+23 Febuary: 
+Investigated various approaches and models suitable for use in facial emotion and speech recognition systems.
+
+15 March:
+Came out with the skeleton of the GUI with sample data to plot show the graphs.
+
+22nd March:
+Started with the base design of the Poster, coming up with the layout and contents to be inside the poster.
+
+27nd Match:
+Updated the GUI of converting data output from emotion and speech into a dataframe for the plotting
+
+29th March:
+Finalised the content and layout of poster.
+
+5th April:
+Finalised the GUI with the average emotions on scatter plot as well as speech and emotion of each person overtime. Added the output result for Speech and Emotion such as 'Happy' or 'Sad"
+
+
