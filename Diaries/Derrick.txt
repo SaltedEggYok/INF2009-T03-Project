@@ -1,0 +1,16 @@
+23 Febuary: 
+Investigated various approaches and models suitable for use in facial emotion and speech recognition systems.
+
+13 March:
+Created script for custom data loading, processing and appending to training csv for FER model
+
+5 April:
+Updated emotion detector code, write video recording
+
+6 April:
+Updated emotion detector code, optimize code
+
+6 April:
+Created slides for video demo on physical set up of edge devices
+
+
