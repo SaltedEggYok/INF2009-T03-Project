@@ -48,8 +48,16 @@ speech_df['Value_Num'] = speech_df['Value'].map(value_to_num)
 average_emotion = emotion_df['Value_Num'].mean()
 average_speech = speech_df['Value_Num'].mean()
 
-metric1_text = 'Happy' if average_emotion > 0 else 'Sad'
-metric2_text = 'Happy' if average_speech > 0 else 'Sad'
+def determine_metric_text(average_value):
+    if average_value > 0:
+        return 'Positive'
+    elif average_value < 0:
+        return 'Negative'
+    else:
+        return 'Neutral'
+
+metric1_text = determine_metric_text(average_emotion)
+metric2_text = determine_metric_text(average_speech)
 
 # GUI starts here
 st.title('Edvisor Dashboard')
@@ -75,9 +83,7 @@ with col2:
     # Plotting Speech Over Time
     st.subheader('Speech Over Time')
     fig2, ax2 = plt.subplots()
-    for person_id, group_df in speech_df.groupby('Person'):
-        group_df = group_df.sort_values('Timestamp')
-        ax2.plot(group_df['Timestamp'], group_df['Value_Num'], marker='o', label=f'Person {person_id}')
+    ax2.plot(speech_df['Timestamp'], speech_df['Value_Num'], marker='o', color='blue', label='Speech')
     ax2.set_ylabel('Speech Level')
     ax2.set_title('Speech Over Time')
     ax2.legend()
@@ -90,7 +96,7 @@ analysis_fig, analysis_ax = plt.subplots()
 # Average emotion and speech level for each person
 for person_id in emotion_df['Person'].unique():
     emotion = emotion_df[emotion_df['Person'] == person_id]['Value_Num'].mean()
-    speech = speech_df[speech_df['Person'] == person_id]['Value_Num'].mean()
+    speech = speech_df['Value_Num'].mean()
     analysis_ax.scatter(speech, emotion, label=f'Person {person_id}')
 
 analysis_ax.axhline(0, color='grey', linestyle='--')
