@@ -17,3 +17,4 @@ Able to take in recorded audio and have a result appear
 Tested 2nd model's runtime and prediction, works fine. However as we have changed the structure of program,
 the 1st model seems to be more suitable for our needs. Thus will continue working on taking and adapting the 1st
 model into our application.
+

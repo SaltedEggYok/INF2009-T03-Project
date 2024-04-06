@@ -144,13 +144,15 @@ class SER_model:
         # predict the emotion, calling the model
         livepreds = self.loaded_model.predict(
             feature_2d, batch_size=32, verbose=1)
+        print(livepreds)
         livepreds1 = livepreds.argmax(axis=1)
         liveabc = livepreds1.astype(int).flatten()
+        print(liveabc)
 
         # converting the prediction (interger form) to emotion (string form), might not be needed in final product
         livepredictions = self.lb.inverse_transform(liveabc)
 
-        self.add_to_results(timestamp, livepredictions)
+        self.add_to_results(timestamp, liveabc[0])
         return livepredictions
 
     """
@@ -175,11 +177,27 @@ class SER_model:
         # declare a dictionary to store the results if it doesn't exist
         if self.results is None:
             self.results = {}
-        if timestamp not in self.results:
-            self.results[timestamp] = {}
 
-        # add the results to the dictionary
-        self.results[timestamp][userID] = emotion
+        # reformat the timestamp so the time can be a key in the dictionary
+        hour, minute, second, _ = map(int, timestamp.split(':'))            
+        time_tuple = (hour, minute, second)
+
+        if time_tuple not in self.results:
+            self.results[time_tuple] = {}
+
+        # TODO : CHANGE THIS, CURRENT HARDCODED
+        # generalize emotions according to FEELING_LIST
+        if emotion == 1 or emotion == 6:  # calm
+            # add the results to the dictionary
+            self.results[time_tuple][userID] = "Neutral"
+        elif emotion == 3 or emotion == 8:  # happy
+            # add the results to the dictionary
+            self.results[time_tuple][userID] = "Positive"
+        elif emotion == 0 or emotion == 5 or emotion == 2 or emotion == 7 or emotion == 4 or emotion == 9:  # angry, fearful, sad
+            # add the results to the dictionary
+            self.results[time_tuple][userID] = "Negative"
+        # # add the results to the dictionary
+        # self.results[timestamp][userID] = emotion
 
     def get_results(self):
         return self.results
@@ -188,3 +206,36 @@ class SER_model:
         # export the results to a txt file
         with open(filename, "w") as file:
             file.write(str(self.results))
+
+    def sync_time(self):
+        # open the final output file
+        output_file = open("SER/pred/outputs.txt", "w")
+
+        # access dictionary
+        if len(self.results) > 0:
+            # iterate through the dictionary
+            for idx, (key, value) in enumerate(self.results.items()):
+                # if it's the first element, set the starting time to be used to offset all other times
+                if idx == 0:
+                    starting_hour, starting_minute, starting_second = key
+                    output_key = (0,0,0)
+                    output_file.write(f"{output_key}: {value}\n")
+                    continue
+                
+                # offset all times by the starting time
+                hour, minute, second = key
+                # if the hour is less than the starting hour, it means it's the next day
+                if hour < starting_hour:
+                    hour += 24  
+                # if the minute is less than the starting minute, it means the hour is less than the starting hour, same for seconds
+                if minute < starting_minute:
+                    hour -= 1
+                    minute += 60
+                if second < starting_second:
+                    minute -= 1
+                    second += 60
+
+                # write the offset time to the file
+                output_key = (hour - starting_hour, minute - starting_minute, second - starting_second)
+                output_file.write(f"{output_key}: {value}\n")
+

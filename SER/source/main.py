@@ -5,10 +5,13 @@ import SER_trainmodel
 import numpy as np
 import pyaudio
 import wave
-import datetime
+from datetime import datetime
 from scipy.io.wavfile import write
 from array import array
 import cv2
+
+from MQTT.mqtt_publisher_class import MQTTPublisher
+# import MQTT.mqtt_publisher_class as publisher
 
 if __name__ == "__main__":
     # train model
@@ -50,7 +53,15 @@ if __name__ == "__main__":
 
             print("start recording")  # DEBUG
             # get timestamp of when recording starts
-            timestamp = datetime.datetime.now().strftime("%H_%M_%S_%f")
+            timestamp = datetime.now().strftime("%H:%M:%S:%f")
+            split_time = timestamp.split(':')
+            # get the milliseconds from microseconds
+            milliseconds = int(split_time[3][0:3])
+            # format the time properly
+            formatted_time = f"{split_time[0]}:{split_time[1]}:{split_time[2]}:{str(milliseconds).zfill(3)}"
+
+            # because files cannot use : in their names
+            file_timestamp = formatted_time.replace(":", "_")
 
             # calculate number of timesteps
             timesteps = int(RATE / BUFFER * RECORD_SECONDS)
@@ -71,18 +82,18 @@ if __name__ == "__main__":
 
             # write audio to file
             wf = wave.open(
-                f"./SER/our_data/testing/{timestamp}.wav", 'wb')
+                f"./SER/our_data/testing/{file_timestamp}.wav", 'wb')
             wf.setnchannels(CHANNELS)
             wf.setsampwidth(audio.get_sample_size(FORMAT))
             wf.setframerate(RATE)
             wf.writeframes(b''.join(frames))
             wf.close()
 
-            print("audio saved " + timestamp)  # DEBUG
+            print("audio saved " + file_timestamp)  # DEBUG
 
             # predict emotion
             pred = ser_model.model_predict(
-                f"./SER/our_data/testing/{timestamp}.wav", timestamp=timestamp)
+                f"./SER/our_data/testing/{file_timestamp}.wav", timestamp=formatted_time)
 
             # escape loop
             k = cv2.waitKey(1) & 0xFF
@@ -90,6 +101,16 @@ if __name__ == "__main__":
             if k == ord('q'):
                 break
             # export all preds to excel
-            ser_model.export_result(f"SER/pred/outputs_{timestamp}.txt")
+            ser_model.export_result(f"SER/pred/outputs_{file_timestamp}.txt")
         except KeyboardInterrupt:
             break
+
+    # open the final 
+    # mqtt_publisher = MQTTPublisher()
+    #mqtt_publisher.connect()
+    #mqtt_publisher.publish_payload("emotion/face", f"SER/pred/outputs_{file_timestamp}.txt")
+    ser_model.sync_time()
+
+
+
+
