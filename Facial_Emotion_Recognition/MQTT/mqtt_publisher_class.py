@@ -21,7 +21,7 @@ class MQTTPublisher:
         self.client.connect(self.broker_address)
         self.client.loop_start()
 
-    def publish_payload(self, topic, payload, qos=1):
+    def publish_payload(self, topic, payload, qos=2):
         # This method assumes payload is already encoded
         self.client.publish(topic, payload=payload, qos=qos)
 
@@ -35,10 +35,11 @@ class MQTTPublisher:
             file_content = file.read()
             return base64.b64encode(file_content)
 
-# Usage
+# Test Usage
 if __name__ == "__main__":
     file_path = 'test_payload.txt'
     topic = "emotion/face"
+    # topic = "emotion/speech"
     
     # Initialize MQTTPublisher
     publisher = MQTTPublisher()

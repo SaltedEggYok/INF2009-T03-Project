@@ -8,7 +8,7 @@ import base64
 BROKER = "mqtt.eclipseprojects.io"
 
 class MQTTSubscriber:
-    def __init__(self, broker_address="mqtt.eclipseprojects.io", client_id=""):
+    def __init__(self, broker_address=BROKER, client_id=""):
         # self.client = mqtt.Client(client_id if client_id else mqtt.base62(uuid.uuid4().int, padding=22), mqtt.CallbackAPIVersion.VERSION_5)
         self.client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
         self.client.on_connect = self.on_connect
@@ -27,12 +27,14 @@ class MQTTSubscriber:
         print(f"Message received on topic {message.topic}")
         # Decode the message payload
         decoded_content = base64.b64decode(message.payload)
-        # Path to save the file
-        output_file_path = "output.txt"
+        # Generate a file path based on the topic
+        topic_as_filename = message.topic.replace('/', '_') + ".txt"
+        output_file_path = f"output_{topic_as_filename}"
         # Write the decoded content to a file
         with open(output_file_path, "wb") as output_file:
             output_file.write(decoded_content)
         print(f"File has been written to {output_file_path}")
+
 
     def on_subscribe(self, client, userdata, mid, reason_code_list, properties):
         # Since we subscribed only for a single channel, reason_code_list contains
@@ -61,21 +63,21 @@ class MQTTSubscriber:
         self.client.disconnect()
         self.client.loop_stop()
 
-# Usage
+# Test Usage
 if __name__ == "__main__":
     subscriber = MQTTSubscriber()
     subscriber.connect()
     time.sleep(1)  # Wait a bit for the connection to establish
     
     # Subscribe to topics
-    topics = [("emotion/face", 2), ("emotion/voice", 2)]
+    topics = [("emotion/face", 2), ("emotion/speech", 2)]
     subscriber.subscribe(topics)
     
     # Keep the subscription alive for some time
-    time.sleep(10)
+    time.sleep(10000)
     
     # Unsubscribe from topics (optional, demonstrate usage)
-    subscriber.unsubscribe(["emotion/face", "emotion/voice"])
+    subscriber.unsubscribe(["emotion/face", "emotion/speech"])
     
     # Disconnect after some time
     time.sleep(1)
