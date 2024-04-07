@@ -19,3 +19,10 @@ Completed post processing of outputs, decided to send data in the form of
 (18, 31, 27): {0: 'Neutral'}
 (18, 31, 28): {0: 'Neutral', 1: 'Negative'}
 where {time_stamp : {user:emotion}}
+
+
+1st April:
+Completed Integration of MQTT into the system, able to receive from end device and transmitted from the pi.
+
+6th April
+Tested full integration of system along with the SER, along with the display of results onto the GUI and integration with the real video.
