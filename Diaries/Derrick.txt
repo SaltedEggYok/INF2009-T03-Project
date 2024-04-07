@@ -1,0 +1,16 @@
+27 Febuary: 
+Ideated and proposed problem statement and solution
+
+13 March:
+Created script for custom data loading, processing and appending to training csv for FER model
+
+5 April:
+Updated Davin's emotion detector code
+
+6 April:
+Updated Davin's emotion detector code
+
+6 April:
+Created slides for video demo on physical set up of edge devices (SER/FER)
+
+

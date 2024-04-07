@@ -80,6 +80,15 @@ python ./SER/source/test.py
 # Speech Emotion Recognition Real Time
 Not yet implemented.
 
+# Facial Emotion Recognition
+Run all commands from the main directory
+
+Installing requirements
+Not yet implemented
+
+Running test code
+python ./Facial_Emotion_Recognition/emotion_detector.py
+
 [contributors-shield]: https://img.shields.io/github/contributors/SaltedEggYok/INF2009-T03-Project.svg?style=for-the-badge
 [contributors-url]: https://github.com/SaltedEggYok/INF2009-T03-Project/graphs/contributors
 [forks-shield]: https://img.shields.io/github/forks/SaltedEggYok/INF2009-T03-Project.svg?style=for-the-badge
