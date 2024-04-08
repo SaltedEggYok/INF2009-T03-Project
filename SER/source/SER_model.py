@@ -10,8 +10,16 @@ from sklearn.preprocessing import LabelEncoder
 import keras
 from keras.models import Sequential, Model, model_from_json
 from keras.layers import (
-    Dense, Embedding, LSTM, Input, Flatten, Dropout, Activation,
-    Conv1D, MaxPooling1D, AveragePooling1D
+    Dense,
+    Embedding,
+    LSTM,
+    Input,
+    Flatten,
+    Dropout,
+    Activation,
+    Conv1D,
+    MaxPooling1D,
+    AveragePooling1D,
 )
 from keras.preprocessing import sequence
 from keras.utils import pad_sequences, to_categorical
@@ -91,7 +99,8 @@ class SER_model:
 
         # evaluate loaded model on test data
         self.loaded_model.compile(
-            loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"])
+            loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"]
+        )
 
     """
     Function to preprocess the audio file, <!only used internally!>
@@ -117,8 +126,7 @@ class SER_model:
         )
         # augmenting data
         sample_rate = np.array(sample_rate)
-        feature = np.mean(librosa.feature.mfcc(
-            y=X, sr=sample_rate, n_mfcc=13), axis=0)
+        feature = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13), axis=0)
         return feature
 
     """
@@ -142,12 +150,11 @@ class SER_model:
         feature_2d = np.expand_dims(feature_df, axis=2)
 
         # predict the emotion, calling the model
-        livepreds = self.loaded_model.predict(
-            feature_2d, batch_size=32, verbose=1)
-        print(livepreds)
+        livepreds = self.loaded_model.predict(feature_2d, batch_size=32, verbose=1)
+        # print(livepreds)
         livepreds1 = livepreds.argmax(axis=1)
         liveabc = livepreds1.astype(int).flatten()
-        print(liveabc)
+        # print(liveabc)
 
         # converting the prediction (interger form) to emotion (string form), might not be needed in final product
         livepredictions = self.lb.inverse_transform(liveabc)
@@ -179,7 +186,7 @@ class SER_model:
             self.results = {}
 
         # reformat the timestamp so the time can be a key in the dictionary
-        hour, minute, second, _ = map(int, timestamp.split(':'))            
+        hour, minute, second, _ = map(int, timestamp.split(":"))
         time_tuple = (hour, minute, second)
 
         if time_tuple not in self.results:
@@ -193,7 +200,14 @@ class SER_model:
         elif emotion == 3 or emotion == 8:  # happy
             # add the results to the dictionary
             self.results[time_tuple][userID] = "Positive"
-        elif emotion == 0 or emotion == 5 or emotion == 2 or emotion == 7 or emotion == 4 or emotion == 9:  # angry, fearful, sad
+        elif (
+            emotion == 0
+            or emotion == 5
+            or emotion == 2
+            or emotion == 7
+            or emotion == 4
+            or emotion == 9
+        ):  # angry, fearful, sad
             # add the results to the dictionary
             self.results[time_tuple][userID] = "Negative"
         # # add the results to the dictionary
@@ -207,26 +221,24 @@ class SER_model:
         with open(filename, "w") as file:
             file.write(str(self.results))
 
-    def sync_time(self):
+    def export_time_offset_result(self, starting_time):
         # open the final output file
         output_file = open("SER/pred/outputs.txt", "w")
+
+        starting_hour, starting_minute, starting_second = map(
+            int, starting_time.split(":")
+        )
 
         # access dictionary
         if len(self.results) > 0:
             # iterate through the dictionary
-            for idx, (key, value) in enumerate(self.results.items()):
-                # if it's the first element, set the starting time to be used to offset all other times
-                if idx == 0:
-                    starting_hour, starting_minute, starting_second = key
-                    output_key = (0,0,0)
-                    output_file.write(f"{output_key}: {value}\n")
-                    continue
-                
+            for key, value in self.results.items():
+
                 # offset all times by the starting time
                 hour, minute, second = key
                 # if the hour is less than the starting hour, it means it's the next day
                 if hour < starting_hour:
-                    hour += 24  
+                    hour += 24
                 # if the minute is less than the starting minute, it means the hour is less than the starting hour, same for seconds
                 if minute < starting_minute:
                     hour -= 1
@@ -236,6 +248,9 @@ class SER_model:
                     second += 60
 
                 # write the offset time to the file
-                output_key = (hour - starting_hour, minute - starting_minute, second - starting_second)
+                output_key = (
+                    hour - starting_hour,
+                    minute - starting_minute,
+                    second - starting_second,
+                )
                 output_file.write(f"{output_key}: {value}\n")
-

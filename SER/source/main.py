@@ -39,6 +39,9 @@ if __name__ == "__main__":
     # Initialize a non-silent signals array to state "True" in the first 'while' iteration.
     data = array('h', np.random.randint(size=BUFFER, low=0, high=500))
 
+    # init starting time
+    starting_time = datetime.now().strftime("%H:%M:%S")
+
     # perform audio recording every few seconds
     while (True):  # TODO : replace this boolean with a controllable one
         try:
@@ -95,22 +98,22 @@ if __name__ == "__main__":
             pred = ser_model.model_predict(
                 f"./SER/our_data/testing/{file_timestamp}.wav", timestamp=formatted_time)
 
-            # escape loop
-            k = cv2.waitKey(1) & 0xFF
-            # press 'q' to exit
-            if k == ord('q'):
-                break
-            # export all preds to excel
+
+            # export all preds to excel, DEBUG
             ser_model.export_result(f"SER/pred/outputs_{file_timestamp}.txt")
         except KeyboardInterrupt:
             break
 
-    # open the final 
-    # mqtt_publisher = MQTTPublisher()
-    #mqtt_publisher.connect()
-    #mqtt_publisher.publish_payload("emotion/face", f"SER/pred/outputs_{file_timestamp}.txt")
-    ser_model.sync_time()
+    # close the stream
+    stream.stop_stream()
+    stream.close()
+    audio.terminate()
 
+    # export all preds to excel
+    ser_model.export_time_offset_result(starting_time=starting_time)
 
-
-
+    # send the data to the MQTT broker
+    mqtt_publisher = MQTTPublisher()
+    mqtt_publisher.connect()
+    mqtt_publisher.publish_payload("emotion/speech", f"SER/pred/outputs.txt")
+    mqtt_publisher.disconnect()
