@@ -5,6 +5,14 @@ from modules.FERDataset import EmotionRecognitionDataset
         
 # Generates train,val and test datasets for reproducibility
 def generate_datasets(dataframe,data_path):
+    '''
+    Function to generate the training, validation and test datasets
+    :param dataframe: dataframe to generate datasets from
+    :type dataframe: pd.DataFrame
+    :param data_path: path to save the datasets
+    :type data_path: str
+    :return: None
+    '''
     if(not(os.path.exists(f'{data_path}/training.csv'))):
         train_df = dataframe[dataframe['Usage'] == 'Training'] 
         val_df = dataframe[dataframe['Usage'] == 'PublicTest'] 

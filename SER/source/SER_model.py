@@ -31,23 +31,24 @@ import tensorflow as tf
 from matplotlib.pyplot import specgram
 import SER_utils
 
-"""
-Class to predict the emotion from the audio file
-
-Attributes:
-loaded_model (keras.model): model to predict the emotion
-lb (LabelEncoder): label encoder for the emotions
-
-Methods:
-__init__(self): constructor
-load_model(self, model_path, weights_path): load the model
-preprocess_audio(self, audio_path): preprocess the audio file (internal use only)
-model_predict(self, audio_path): predict the emotion
-
-"""
-
 
 class SER_model:
+    '''
+    Class to predict the emotion from the audio file
+
+    Attributes:
+    loaded_model (keras.model): model to predict the emotion
+    lb (LabelEncoder): label encoder for the emotions
+
+    Methods:
+    __init__(self): constructor
+    load_model(self, model_path, weights_path): load the model
+    preprocess_audio(self, audio_path): preprocess the audio file (internal use only)
+    model_predict(self, audio_path): predict the emotion
+
+    '''
+
+
 
     # declare variables
     loaded_model = None  # holds the model
@@ -63,28 +64,23 @@ class SER_model:
     results = None  # holds the results of predictions
 
     def __init__(self):
+        '''
+        Constructor
+        '''
         self.loaded_model = None
         self.lb = LabelEncoder()
         self.lb.fit(SER_utils.FEELING_LIST)
         self.results = None
 
-    """
-    load_model:
-    Function to load the model and weights
-
-    Parameters:
-    model_path (str): path to the model file
-    weights_path (str): path to the weights file
-
-    Returns:
-    None
-
-    Usage:
-    ser_model = SER_model()
-    ser_model.load_model(model_path, weights_path)
-    """
-
     def load_model(self, model_path, weights_path):
+        '''
+        Function to load the model and weights
+        :param model_path: path to the model file
+        :type model_path: str
+        :param weights_path: path to the weights file
+        :type weights_path: str
+        :return: None
+        '''
         # load json and create model
         json_file = open(model_path, "r")
         loaded_model_json = json_file.read()
@@ -102,20 +98,13 @@ class SER_model:
             loss="categorical_crossentropy", optimizer=opt, metrics=["accuracy"]
         )
 
-    """
-    Function to preprocess the audio file, <!only used internally!>
-
-    Parameters:
-    audio_path (str): path to the audio file
-
-    Returns:
-    feature (np.array): array of audio features
-
-    Usage:
-    self.preprocess_audio(audio_path)
-    """
-
     def preprocess_audio(self, audio_path):
+        '''
+        Function to preprocess the audio file, <!only used internally!>
+        :param audio_path: path to the audio file
+        :type audio_path: str
+        :return: feature (np.array): array of audio features
+        '''
         # get librosa features
         X, sample_rate = librosa.load(
             audio_path,
@@ -129,18 +118,13 @@ class SER_model:
         feature = np.mean(librosa.feature.mfcc(y=X, sr=sample_rate, n_mfcc=13), axis=0)
         return feature
 
-    """
-    Function to predict the emotion from the audio file
-
-    Parameters:
-    audio_path (str): path to the audio file
-
-    Returns:
-    livepredictions (str): predicted emotion
-
-    """
-
     def model_predict(self, audio_path, timestamp):
+        '''
+        Function to predict the emotion from the audio file
+        :param audio_path: path to the audio file
+        :type audio_path: str
+        :return: livepredictions (str): predicted emotion
+        '''
         # preprocess the audio, get features
         feature = self.preprocess_audio(audio_path)
 
@@ -162,25 +146,22 @@ class SER_model:
         self.add_to_results(timestamp, liveabc[0])
         return livepredictions
 
-    """
-    Function to add the results to the results variable (for internal use)
-    Schema for the results variable:
-    results = {
-        timestamp: {
-            userID : emotion
-        }
-    }
-
-    Parameters:
-    timestamp (int): timestamp of the prediction
-    userID (int): userID of the user
-    emotion (str OR int???): emotion predicted
-
-    Returns:
-    None
-    """
 
     def add_to_results(self, timestamp, emotion, userID=0):
+        '''
+        Function to add the results to the results variable
+        Schema for the results variable:
+        results = {
+            timestamp: {
+                userID : emotion
+            }
+        }
+        :param timestamp: timestamp of the prediction
+        :type timestamp: str
+        :param emotion: emotion predicted
+        :type emotion: str
+        :return: None
+        '''
         # declare a dictionary to store the results if it doesn't exist
         if self.results is None:
             self.results = {}
@@ -214,14 +195,28 @@ class SER_model:
         # self.results[timestamp][userID] = emotion
 
     def get_results(self):
+        '''
+        Function to get the results of the predictions
+        :return: results (dict): dictionary of the results
+        '''
         return self.results
 
     def export_result(self, filename):
+        '''
+        Function to export the results to a txt file
+        :param filename: name of the file to export the results
+        :type filename: str
+        :return: None
+        '''
         # export the results to a txt file
         with open(filename, "w") as file:
             file.write(str(self.results))
 
     def export_time_offset_result(self, starting_time):
+        '''
+        Function to synchronize the time of the predictions and export the results to a txt file
+        :return: None
+        '''
         # open the final output file
         output_file = open("SER/pred/outputs.txt", "w")
 

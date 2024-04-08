@@ -70,15 +70,12 @@ To get a local copy up and running follow these simple example steps.
 # Speech Emotion Recognition
 Run all commands from the main directory
 
-Installing requirements
+Installing requirements - requires Python 3.9!
 
 pip install -r ./SER/requirements.txt
 
 Running test code
-python ./SER/source/test.py
-
-# Speech Emotion Recognition Real Time
-Not yet implemented.
+python ./SER/source/main.py
 
 # Facial Emotion Recognition
 Run all commands from the main directory

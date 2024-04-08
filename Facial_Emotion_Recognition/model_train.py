@@ -10,6 +10,10 @@ from utils.util_funcs import get_train_transform,get_val_transform
 import torchvision.transforms as transforms
 
 def main():
+    '''
+    Function to train the model
+    :return: None
+    '''
     save_dir = "ERM_Results"
     print(f"------------TRAINING ON DEVICE: {DEVICE}-------------")
     if not os.path.exists(save_dir):

@@ -15,6 +15,13 @@ emotion_mapping = {
 
 # Function to preprocess the image
 def preprocess_image(image_path):
+    '''
+    Function to preprocess the image
+    :param image_path: path to the image
+    :type image_path: str
+    :return: gray_image: preprocessed image
+    :rtype: np.array
+    '''
     # Read the image
     image = cv2.imread(image_path)
     
@@ -27,6 +34,19 @@ def preprocess_image(image_path):
 
 # Function to convert image data to CSV format
 def convert_to_csv(image_number, emotion_label, image_data, usage):
+    '''
+    Function to convert image data to CSV format
+    :param image_number: image number
+    :type image_number: int
+    :param emotion_label: emotion label
+    :type emotion_label: int
+    :param image_data: image data
+    :type image_data: np.array
+    :param usage: usage type
+    :type usage: str
+    :return: csv_row: CSV row
+    :rtype: str
+    '''
     # Flatten the pixel values
     flattened_pixels = image_data.flatten()
     # Convert pixel values to comma-separated string

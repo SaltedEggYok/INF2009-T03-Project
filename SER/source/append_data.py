@@ -2,7 +2,15 @@ import os
 import re
 import shutil
 
+
 def validate_filename(filename):
+
+    '''
+    Validates the format of the filenames of audio files in a folder
+    :param filename: Path to folder of audio files
+    :type filename: str
+    :return: True if ALL filenames are valid, False otherwise
+    '''
     
     # Define regular expression pattern for filename validation
     pattern = r'^\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}-\d{2}\.(wav|mp4)$'
@@ -45,6 +53,13 @@ def validate_filename(filename):
     return True
 
 def process_files(input_directory):
+    '''
+    Processes audio files in a directory and copies them to appropriate destination directories
+    :param input_directory: Path to folder of audio files
+    :type input_directory: str
+    :return: None
+    '''
+    
     # Define destination directories
     base_dest_directory = os.path.join(dir, 'data', 'training')
         

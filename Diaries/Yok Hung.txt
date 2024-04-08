@@ -18,3 +18,14 @@ Tested 2nd model's runtime and prediction, works fine. However as we have change
 the 1st model seems to be more suitable for our needs. Thus will continue working on taking and adapting the 1st
 model into our application.
 
+20/3/2024
+Made the main loop of the SER system, able to run until stopping, reccording audio in 4 second bursts, and predicting on them
+
+27/3/2024
+Processed output of the model, and output everything to text files, following FER's format, to allow for easier intergration with GUI
+
+4/4/2024
+Retrained model with our dataset
+
+6/4/2024
+Intergrated MQTT into the system
