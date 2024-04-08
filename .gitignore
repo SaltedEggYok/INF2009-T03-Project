@@ -1,5 +1,6 @@
 #ignore demo dataset
 SER/data/testdata/*
+SER/our_data/*
 
 #ignore datasets
 Facial_Emotion_Recognition/datasets
